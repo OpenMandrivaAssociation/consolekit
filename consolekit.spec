@@ -19,7 +19,7 @@ Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.gz
 Patch0: ConsoleKit-0.2.1-lsb.patch
 # (fc) 0.2.1-1mdv fix build with old inotify header
 Patch1: ConsoleKit-0.2.1-header.patch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(pre): rpm-helper
 Requires(preun): rpm-helper
 
@@ -45,7 +45,7 @@ It provides asynchronous notification via the system message bus.
 %package x11
 Summary: X11-requiring add-ons for ConsoleKit
 Group: System/Libraries
-Requires: %name = %{version}
+Requires: %{name} = %{version}
 
 %description x11 
 ConsoleKit contains some tools that require Xlib to be installed,
