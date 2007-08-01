@@ -11,7 +11,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.2.1
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPL
 Group: System/Libraries
 URL: http://consolekit.freedesktop.org
@@ -59,6 +59,7 @@ Summary: ConsoleKit libraries
 Group: System/Libraries
 Requires: pam
 Requires: %{name} >= %{version}
+Provides: %{_lib}%{name} = %{version}-%{release}
 
 %description -n %{lib_name}
 Libraries and a PAM module for interacting with ConsoleKit.
