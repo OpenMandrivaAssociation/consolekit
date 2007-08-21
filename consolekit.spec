@@ -11,7 +11,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.2.1
-Release: %mkrel 3
+Release: %mkrel 4
 License: GPL
 Group: System/Libraries
 URL: http://consolekit.freedesktop.org
@@ -22,6 +22,8 @@ Patch0: ConsoleKit-0.2.1-lsb.patch
 Patch1: ConsoleKit-0.2.1-header.patch
 # (fc) 0.2.1-3mdv fix initscript order
 Patch2: ConsoleKit-0.2.1-order.patch
+# (fc) 0.2.1-4mdv remove gdm specific configuration, it is in gdm package now (Mdv bug #32571)
+Patch3: ConsoleKit-0.2.1-gdm.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(pre): rpm-helper
 Requires(preun): rpm-helper
@@ -82,6 +84,7 @@ Headers, libraries and API docs for ConsoleKit
 %patch0 -p1 -b .lsb
 %patch1 -p1 -b .header
 %patch2 -p1 -b .order
+%patch3 -p1 -b .gdm
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
