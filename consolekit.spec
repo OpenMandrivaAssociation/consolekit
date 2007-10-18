@@ -11,10 +11,10 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.2.3
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPL
 Group: System/Libraries
-URL: http://consolekit.freedesktop.org
+URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.gz
 # (fc) add lsb header
 Patch0: ConsoleKit-0.2.1-lsb.patch
@@ -50,7 +50,7 @@ Summary: X11-requiring add-ons for ConsoleKit
 Group: System/Libraries
 Requires: %{name} = %{version}
 
-%description x11 
+%description x11
 ConsoleKit contains some tools that require Xlib to be installed,
 those are in this separate package so server systems need not install
 X. Applications (such as xorg-x11-xinit) and login managers (such as
