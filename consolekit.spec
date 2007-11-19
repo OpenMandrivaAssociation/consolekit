@@ -11,7 +11,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.2.3
-Release: %mkrel 2
+Release: %mkrel 3
 License: GPL
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -105,7 +105,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 %_post_service consolekit
-/sbin/chkconfig consolekit resetpriorities
 
 %preun
 %_preun_service consolekit
