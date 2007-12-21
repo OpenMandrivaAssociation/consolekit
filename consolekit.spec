@@ -22,6 +22,7 @@ Patch0: ConsoleKit-0.2.1-lsb.patch
 Patch1: ConsoleKit-0.2.1-header.patch
 # (fc) 0.2.1-3mdv fix initscript order
 Patch2: ConsoleKit-0.2.1-order.patch
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(pre): rpm-helper
 Requires(preun): rpm-helper
 
