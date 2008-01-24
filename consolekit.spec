@@ -10,18 +10,12 @@
 
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
-Version: 0.2.3
-Release: %mkrel 3
+Version: 0.2.6
+Release: %mkrel 1
 License: GPL
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.gz
-# (fc) add lsb header
-Patch0: ConsoleKit-0.2.1-lsb.patch
-# (fc) 0.2.1-1mdv fix build with old inotify header
-Patch1: ConsoleKit-0.2.1-header.patch
-# (fc) 0.2.1-3mdv fix initscript order
-Patch2: ConsoleKit-0.2.1-order.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(pre): rpm-helper
 Requires(preun): rpm-helper
@@ -79,9 +73,6 @@ Headers, libraries and API docs for ConsoleKit
 
 %prep
 %setup -q -n %{pkgname}-%{version}
-%patch0 -p1 -b .lsb
-%patch1 -p1 -b .header
-%patch2 -p1 -b .order
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
@@ -93,21 +84,27 @@ make
 rm -rf $RPM_BUILD_ROOT
 %makeinstall_std
 
-#rename to lowercase
-mv $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/ConsoleKit $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/consolekit 
-
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.{a,la}
 rm -f $RPM_BUILD_ROOT/%{_lib}/security/*.{a,la}
 rm -rf $RPM_BUILD_ROOT/%{_datadir}/doc/ConsoleKit
+
+mkdir -p $RPM_BUILD_ROOT/%{_var}/log/ConsoleKit
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
-%_post_service consolekit
+if [ ! -f %{_var}/log/ConsoleKit/history ]; then
+   umask 022
+   touch %{_var}/log/ConsoleKit/history
+fi
 
 %preun
-%_preun_service consolekit
+# remove obsolete ConsoleKit initscript 
+if [ -f %{_sysconfdir}/rc.d/init.d/consolekit ]; then 
+    /sbin/service consolekit stop > /dev/null 2>/dev/null || :
+    /sbin/chkconfig --del consolekit
+fi
 
 %post -n %{lib_name} -p /sbin/ldconfig
 
@@ -118,10 +115,14 @@ rm -rf $RPM_BUILD_ROOT
 %doc README AUTHORS NEWS COPYING
 
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/*
-%{_sysconfdir}/rc.d/init.d/consolekit
 %{_sbindir}/console-kit-daemon
+%{_bindir}/ck-history
 %{_bindir}/ck-list-sessions
 %config(noreplace) %{_sysconfdir}/ConsoleKit
+%{_libdir}/ConsoleKit
+%{_datadir}/PolicyKit/policy/*
+%{_datadir}/dbus-1/system-services/*
+%attr(755,root,root) %{_var}/log/ConsoleKit
 
 %files x11
 %defattr(-,root,root,-)
