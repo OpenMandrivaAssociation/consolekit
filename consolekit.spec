@@ -10,7 +10,7 @@
 
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
-Version: 0.2.6
+Version: 0.2.7
 Release: %mkrel 1
 License: GPL
 Group: System/Libraries
@@ -23,6 +23,7 @@ Requires(preun): rpm-helper
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: dbus-devel  >= %{dbus_version}
 BuildRequires: dbus-glib-devel >= %{dbus_glib_version}
+BuildRequires: polkit-devel
 BuildRequires: pam-devel
 BuildRequires: X11-devel
 BuildRequires: xmlto
@@ -116,6 +117,7 @@ fi
 
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/*
 %{_sbindir}/console-kit-daemon
+%{_sbindir}/ck-log-system-start
 %{_bindir}/ck-history
 %{_bindir}/ck-list-sessions
 %config(noreplace) %{_sysconfdir}/ConsoleKit
@@ -123,6 +125,7 @@ fi
 %{_datadir}/PolicyKit/policy/*
 %{_datadir}/dbus-1/system-services/*
 %attr(755,root,root) %{_var}/log/ConsoleKit
+%attr(750,root,root) %{_var}/run/ConsoleKit
 
 %files x11
 %defattr(-,root,root,-)
