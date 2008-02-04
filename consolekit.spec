@@ -11,14 +11,12 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.2.7
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPL
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-Requires(pre): rpm-helper
-Requires(preun): rpm-helper
 
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: dbus-devel  >= %{dbus_version}
@@ -94,18 +92,19 @@ mkdir -p $RPM_BUILD_ROOT/%{_var}/log/ConsoleKit
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%pre
+# remove obsolete ConsoleKit initscript 
+if [ -f %{_sysconfdir}/rc.d/init.d/consolekit ]; then 
+    /sbin/service consolekit stop > /dev/null 2>/dev/null || :
+    /sbin/chkconfig --del consolekit
+fi
+
 %post
 if [ ! -f %{_var}/log/ConsoleKit/history ]; then
    umask 022
    touch %{_var}/log/ConsoleKit/history
 fi
 
-%preun
-# remove obsolete ConsoleKit initscript 
-if [ -f %{_sysconfdir}/rc.d/init.d/consolekit ]; then 
-    /sbin/service consolekit stop > /dev/null 2>/dev/null || :
-    /sbin/chkconfig --del consolekit
-fi
 
 %post -n %{lib_name} -p /sbin/ldconfig
 
