@@ -10,8 +10,8 @@
 
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
-Version: 0.2.7
-Release: %mkrel 2
+Version: 0.2.9
+Release: %mkrel 1
 License: GPL
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -117,8 +117,11 @@ fi
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/*
 %{_sbindir}/console-kit-daemon
 %{_sbindir}/ck-log-system-start
+%{_sbindir}/ck-log-system-restart
+%{_sbindir}/ck-log-system-stop
 %{_bindir}/ck-history
 %{_bindir}/ck-list-sessions
+%{_bindir}/ck-launch-session
 %config(noreplace) %{_sysconfdir}/ConsoleKit
 %{_libdir}/ConsoleKit
 %{_datadir}/PolicyKit/policy/*
