@@ -10,12 +10,14 @@
 
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
-Version: 0.2.9
-Release: %mkrel 2
+Version: 0.2.10
+Release: %mkrel 1
 License: GPL
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.gz
+# (fc) 0.2.10-1mdv return policykit result when not privileged (Fedora)
+Patch0: polkit-result.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -72,6 +74,7 @@ Headers, libraries and API docs for ConsoleKit
 
 %prep
 %setup -q -n %{pkgname}-%{version}
+%patch0 -p1 -b .polkit-result
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
@@ -86,8 +89,6 @@ rm -rf $RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.{a,la}
 rm -f $RPM_BUILD_ROOT/%{_lib}/security/*.{a,la}
 rm -rf $RPM_BUILD_ROOT/%{_datadir}/doc/ConsoleKit
-
-mkdir -p $RPM_BUILD_ROOT/%{_var}/log/ConsoleKit
 
 %clean
 rm -rf $RPM_BUILD_ROOT
