@@ -1,4 +1,4 @@
-%define glib2_version           2.6.0
+%define glib2_version           2.7.0
 %define dbus_version            0.90
 %define dbus_glib_version       0.70
 
@@ -10,14 +10,12 @@
 
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
-Version: 0.2.10
+Version: 0.3.0
 Release: %mkrel 1
-License: GPL
+License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
-Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.gz
-# (fc) 0.2.10-1mdv return policykit result when not privileged (Fedora)
-Patch0: polkit-result.patch
+Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -44,6 +42,7 @@ It provides asynchronous notification via the system message bus.
 Summary: X11-requiring add-ons for ConsoleKit
 Group: System/Libraries
 Requires: %{name} = %{version}
+License: GPLv2+
 
 %description x11
 ConsoleKit contains some tools that require Xlib to be installed,
@@ -58,6 +57,7 @@ Group: System/Libraries
 Requires: pam
 Requires: %{name} >= %{version}
 Provides: %{_lib}%{name} = %{version}-%{release}
+License: MIT
 
 %description -n %{lib_name}
 Libraries and a PAM module for interacting with ConsoleKit.
@@ -68,19 +68,18 @@ Group: Development/C
 Requires: %{lib_name} = %{version}
 Provides: %{name}-devel = %{version}-%{release}
 Provides: %{pkgname}-devel = %{version}-%{release}
+License: MIT
 
 %description -n %{lib_name_devel}
 Headers, libraries and API docs for ConsoleKit
 
 %prep
 %setup -q -n %{pkgname}-%{version}
-%patch0 -p1 -b .polkit-result
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
 
-#parallel build is broken
-make
+%make
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -89,6 +88,8 @@ rm -rf $RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.{a,la}
 rm -f $RPM_BUILD_ROOT/%{_lib}/security/*.{a,la}
 rm -rf $RPM_BUILD_ROOT/%{_datadir}/doc/ConsoleKit
+# make sure we don't package a history log
+rm -f $RPM_BUILD_ROOT/%{_var}/log/ConsoleKit/history
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -101,9 +102,8 @@ if [ -f %{_sysconfdir}/rc.d/init.d/consolekit ]; then
 fi
 
 %post
-if [ ! -f %{_var}/log/ConsoleKit/history ]; then
-   umask 022
-   touch %{_var}/log/ConsoleKit/history
+if [ -f /var/log/ConsoleKit/history ]; then
+    chmod a+r /var/log/ConsoleKit/history
 fi
 
 
@@ -146,8 +146,9 @@ fi
 
 %files -n %{lib_name_devel}
 %defattr(-,root,root,-)
-%doc doc/ConsoleKit.html
+%doc doc/dbus/ConsoleKit.html
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
+%{_datadir}/dbus-1/interfaces/*
 
