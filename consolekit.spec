@@ -128,7 +128,7 @@ fi
 %{_bindir}/ck-list-sessions
 %{_bindir}/ck-launch-session
 %config(noreplace) %{_sysconfdir}/ConsoleKit
-%{_libdir}/ConsoleKit
+%{_prefix}/lib/ConsoleKit
 %{_datadir}/PolicyKit/policy/*
 %{_datadir}/dbus-1/system-services/*
 %attr(755,root,root) %{_var}/log/ConsoleKit
