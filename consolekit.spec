@@ -11,11 +11,13 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.3.0
-Release: %mkrel 2
+Release: %mkrel 3
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.bz2
+# (fc) 0.3.0-3mdv allow SetIdleHint (GIT)
+Patch0: ConsoleKit-0.3.0-allowsetidle.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -76,6 +78,7 @@ Headers, libraries and API docs for ConsoleKit
 
 %prep
 %setup -q -n %{pkgname}-%{version}
+%patch0 -p1 -b .allowsetidle
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
