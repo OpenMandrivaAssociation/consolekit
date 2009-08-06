@@ -30,6 +30,7 @@ BuildRequires: polkit-1-devel
 BuildRequires: pam-devel
 BuildRequires: X11-devel
 BuildRequires: xmlto
+BuildRequires: docbook-dtd412-xml
 
 Requires(post): chkconfig
 Requires(preun): chkconfig
