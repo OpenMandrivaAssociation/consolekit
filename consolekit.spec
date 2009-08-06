@@ -12,30 +12,21 @@
 
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
-Version: 0.3.0
-Release: %mkrel 5
+Version: 0.3.1
+Release: %mkrel 1
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
-Source0: http://people.freedesktop.org/~mccann/dist/%{pkgname}-%{version}.tar.bz2
-# (fc) 0.3.0-3mdv allow SetIdleHint (GIT)
-Patch0: ConsoleKit-0.3.0-allowsetidle.patch
+Source0: http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{version}.tar.bz2
 Patch1: ConsoleKit-0.3.0-format_not_a_string_literal_and_no_format_arguments.diff
-# various fixes from GIT
-Patch2: 0003-fix-typo.patch
-Patch3: 0004-don-t-close-the-log-file-fd-twice.patch
-Patch4: 0005-check-the-result-of-the-fchown-call.patch
-Patch5: 0006-fix-up-D-Bus-permissions.patch
-Patch6: 0009-close-directory-to-fix-leak.patch
-Patch7: 0013-don-t-leak-dbus-proxy.patch
-# 0.3.0-5mdv allow getsessions from Manager (needed by gnome-session) (fdo bug #20471)
-Patch8: consolekit-getsessions.patch
+# (fc) memleaks fixes (Fedora)
+Patch2: small-fixes.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: dbus-devel  >= %{dbus_version}
 BuildRequires: dbus-glib-devel >= %{dbus_glib_version}
-BuildRequires: polkit-devel
+BuildRequires: polkit-1-devel
 BuildRequires: pam-devel
 BuildRequires: X11-devel
 BuildRequires: xmlto
@@ -90,15 +81,8 @@ Headers, libraries and API docs for ConsoleKit
 
 %prep
 %setup -q -n %{pkgname}-%{version}
-%patch0 -p1 -b .allowsetidle
 %patch1 -p1 -b .format_not_a_string_literal_and_no_format_arguments
-%patch2 -p1 -b .fixtypo
-%patch3 -p1 -b .doubleclose
-%patch4 -p1 -b .fchown
-%patch5 -p1 -b .dbus-perms
-%patch6 -p1 -b .fdleak
-%patch7 -p1 -b .dbusleak
-%patch8 -p1 -b .getsessions
+%patch2 -p1 -b .memleak-fixes
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
@@ -153,7 +137,7 @@ fi
 %{_bindir}/ck-launch-session
 %config(noreplace) %{_sysconfdir}/ConsoleKit
 %{_prefix}/lib/ConsoleKit
-%{_datadir}/PolicyKit/policy/*
+%{_datadir}/polkit-1/actions/*
 %{_datadir}/dbus-1/system-services/*
 %attr(755,root,root) %{_var}/log/ConsoleKit
 %attr(750,root,root) %{_var}/run/ConsoleKit
