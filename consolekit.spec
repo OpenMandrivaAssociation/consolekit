@@ -13,7 +13,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.3.1
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -21,6 +21,18 @@ Source0: http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{versio
 Patch1: ConsoleKit-0.3.0-format_not_a_string_literal_and_no_format_arguments.diff
 # (fc) memleaks fixes (Fedora)
 Patch2: small-fixes.patch
+
+# (cg) Upstream fixes (needed to support pulse properly)
+Patch0100: 0100-Move-ck_session_run_programs-from-ck-run-programs.h-.patch
+Patch0101: 0101-get-rid-of-ck_seat_set_active_session-prototype-sinc.patch
+Patch0102: 0102-make-CK-database-world-readable.patch
+Patch0103: 0103-when-printing-size_t-use-z-format-string.patch
+Patch0104: 0104-Enforce-that-the-env-array-has-the-right-size.patch
+Patch0105: 0105-database-write-the-console-database-to-disk-before-s.patch
+Patch0106: 0106-get-rid-of-session.d-s-session_active_changed-callou.patch
+Patch0107: 0107-Add-seat.d-callout-directory-and-guarantee-we-dump-t.patch
+
+
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -82,8 +94,7 @@ Headers, libraries and API docs for ConsoleKit
 
 %prep
 %setup -q -n %{pkgname}-%{version}
-%patch1 -p1 -b .format_not_a_string_literal_and_no_format_arguments
-%patch2 -p1 -b .memleak-fixes
+%apply_patches
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
