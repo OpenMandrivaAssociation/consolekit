@@ -13,12 +13,26 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.4.1
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0: http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{version}.tar.bz2
 Patch1: ConsoleKit-0.4.1-format_not_a_string_literal_and_no_format_arguments.patch
+
+# (blino) "activation" bugs
+#         to reproduce with:
+#           for i in $(seq 1 20); do echo $i; killall console-kit-daemon; sleep 2; ck-list-sessions; done
+# (blino) acquire name only after D-Bus methods are registered
+#         or "activation" from clients will fail since D-Bus assumes
+#         the service and methods are available as soon as the name is
+#         acquired
+Patch2: ConsoleKit-0.4.1-acquire_later.patch
+
+# (blino) daemonize only after ConsoleKit is available
+#         or "activation" from clients will fail since D-Bus requires
+#         the service name to be acquired before the daemon helper exits
+Patch3: ConsoleKit-0.4.1-daemonize_later.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -82,6 +96,8 @@ Headers, libraries and API docs for ConsoleKit
 %prep
 %setup -q -n %{pkgname}-%{version}
 %patch1 -p1 -b .format_security
+%patch2 -p1 -b .acquire_later
+%patch3 -p1 -b .daemonize_later
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
