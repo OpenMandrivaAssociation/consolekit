@@ -13,7 +13,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.4.1
-Release: %mkrel 2
+Release: %mkrel 3
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -33,6 +33,9 @@ Patch2: ConsoleKit-0.4.1-acquire_later.patch
 #         or "activation" from clients will fail since D-Bus requires
 #         the service name to be acquired before the daemon helper exits
 Patch3: ConsoleKit-0.4.1-daemonize_later.patch
+
+# (fc) do not use daemonize when activating through dbus, wrong pid confuse dbus and HAL (Mdv bug #56514)
+Patch4: ConsoleKit-0.4.1-disable-daemon-activation.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -98,6 +101,7 @@ Headers, libraries and API docs for ConsoleKit
 %patch1 -p1 -b .format_security
 %patch2 -p1 -b .acquire_later
 %patch3 -p1 -b .daemonize_later
+%patch4 -p1 -b .disable-daemon-activation
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
