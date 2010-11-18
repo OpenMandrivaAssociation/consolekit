@@ -13,7 +13,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.4.2
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -22,6 +22,8 @@ Source0: http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{versio
 #         or "activation" from clients will fail since D-Bus requires
 #         the service name to be acquired before the daemon helper exits
 Patch3: ConsoleKit-0.4.2-daemonize_later.patch
+# rh #643367 and fix console ownership after suspend
+Patch4: ConsoleKit-0.4.2-revert-linux-use-vt_waitevent-logic.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -84,6 +86,7 @@ Headers, libraries and API docs for ConsoleKit
 %prep
 %setup -q -n %{pkgname}-%{version}
 %patch3 -p1 -b .daemonize_later
+%patch4 -p1 -b .revert_vt_waitevent
 
 %build
 %configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
