@@ -13,7 +13,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.4.3
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -29,7 +29,7 @@ BuildRequires: dbus-devel  >= %{dbus_version}
 BuildRequires: dbus-glib-devel >= %{dbus_glib_version}
 BuildRequires: polkit-1-devel
 BuildRequires: pam-devel
-BuildRequires: X11-devel
+BuildRequires: libx11-devel
 BuildRequires: xmlto
 BuildRequires: docbook-dtd412-xml
 
