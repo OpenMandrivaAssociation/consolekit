@@ -10,10 +10,12 @@
 
 %define git_url git://anongit.freedesktop.org/ConsoleKit
 
+%define _with_systemd 1
+
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.4.3
-Release: %mkrel 2
+Release: %mkrel 3
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -32,6 +34,9 @@ BuildRequires: pam-devel
 BuildRequires: libx11-devel
 BuildRequires: xmlto
 BuildRequires: docbook-dtd412-xml
+%if %{_with_systemd}
+BuildRequires:	systemd-units
+%endif
 
 Requires(post): chkconfig
 Requires(preun): chkconfig
@@ -86,7 +91,14 @@ Headers, libraries and API docs for ConsoleKit
 %apply_patches
 
 %build
-%configure2_5x --localstatedir=%{_var} --with-pid-file=%{_var}/run/console-kit-daemon.pid --enable-pam-module --with-pam-module-dir=/%{_lib}/security --enable-docbook-docs 
+%configure2_5x --localstatedir=%{_var} \
+		--with-pid-file=%{_var}/run/console-kit-daemon.pid \
+		--enable-pam-module \
+		--with-pam-module-dir=/%{_lib}/security \
+%if !%{_with_systemd}
+		--without-systemdsystemunitdir \
+%endif
+		--enable-docbook-docs 
 
 %make
 
@@ -142,6 +154,17 @@ fi
 %{_datadir}/dbus-1/system-services/*
 %attr(755,root,root) %{_var}/log/ConsoleKit
 %attr(750,root,root) %{_var}/run/ConsoleKit
+%if %{_with_systemd}
+/lib/systemd
+/lib/systemd/system/console-kit-daemon.service
+/lib/systemd/system/console-kit-log-system-start.service
+/lib/systemd/system/console-kit-log-system-stop.service
+/lib/systemd/system/console-kit-log-system-restart.service
+/lib/systemd/system/basic.target.wants/console-kit-log-system-start.service
+/lib/systemd/system/halt.target.wants/console-kit-log-system-stop.service
+/lib/systemd/system/poweroff.target.wants/console-kit-log-system-stop.service
+/lib/systemd/system/reboot.target.wants/console-kit-log-system-restart.service
+%endif
 
 %files x11
 %defattr(-,root,root,-)
