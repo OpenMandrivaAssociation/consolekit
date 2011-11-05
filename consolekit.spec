@@ -15,7 +15,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.4.5
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -97,6 +97,8 @@ Headers, libraries and API docs for ConsoleKit
 		--with-pam-module-dir=/%{_lib}/security \
 %if !%{_with_systemd}
 		--without-systemdsystemunitdir \
+%else
+		--with-systemdsystemunitdir=%{_unitdir} \
 %endif
 		--enable-docbook-docs 
 
