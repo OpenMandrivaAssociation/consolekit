@@ -105,17 +105,17 @@ Headers, libraries and API docs for ConsoleKit
 %make
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 %makeinstall_std
 
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.{a,la}
-rm -f $RPM_BUILD_ROOT/%{_lib}/security/*.{a,la}
-rm -rf $RPM_BUILD_ROOT/%{_datadir}/doc/ConsoleKit
+rm -f %{buildroot}%{_libdir}/*.{a,la}
+rm -f %{buildroot}/%{_lib}/security/*.{a,la}
+rm -rf %{buildroot}/%{_datadir}/doc/ConsoleKit
 # make sure we don't package a history log
-rm -f $RPM_BUILD_ROOT/%{_var}/log/ConsoleKit/history
+rm -f %{buildroot}/%{_var}/log/ConsoleKit/history
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %pre
 # remove obsolete ConsoleKit initscript 
