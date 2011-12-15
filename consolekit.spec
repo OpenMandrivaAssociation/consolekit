@@ -3,8 +3,8 @@
 %define dbus_glib_version       0.70
 
 %define lib_major 0
-%define lib_name %mklibname consolekit %lib_major
-%define lib_name_devel %mklibname -d consolekit 
+%define libname %mklibname consolekit %lib_major
+%define develname %mklibname -d consolekit 
 
 %define pkgname ConsoleKit
 
@@ -15,7 +15,7 @@
 Summary: System daemon for tracking users, sessions and seats
 Name: consolekit
 Version: 0.4.5
-Release: %mkrel 2
+Release: 3
 License: GPLv2+
 Group: System/Libraries
 URL: http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -24,7 +24,6 @@ Source0: http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{versio
 #         or "activation" from clients will fail since D-Bus requires
 #         the service name to be acquired before the daemon helper exits
 Patch3: ConsoleKit-0.4.2-daemonize_later.patch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: dbus-devel  >= %{dbus_version}
@@ -40,16 +39,19 @@ BuildRequires:	systemd-units
 
 Requires(post): chkconfig
 Requires(preun): chkconfig
-Provides:   should-restart = system
+Requires: pam
 
+Provides: should-restart = system
 Provides: %{pkgname} = %{version}-%{release}
+Conflicts: %{libname} < 0.4.5-3
 
 %description 
 ConsoleKit is a system daemon for tracking what users are logged
 into the system and how they interact with the computer (e.g.
 which keyboard and mouse they use).
 
-It provides asynchronous notification via the system message bus.
+It provides asynchronous notification via the system message bus and 
+a PAM module for interacting with ConsoleKit.
 
 %package x11
 Summary: X11-requiring add-ons for ConsoleKit
@@ -64,58 +66,52 @@ X. Applications (such as xorg-x11-xinit) and login managers (such as
 gdm) that need to register their X sessions with ConsoleKit needs to
 have a Requires: for this package.
 
-%package -n %{lib_name}
+%package -n %{libname}
 Summary: ConsoleKit libraries
 Group: System/Libraries
-Requires: pam
-Requires: %{name} >= %{version}
-Provides: %{_lib}%{name} = %{version}-%{release}
 License: MIT
 
-%description -n %{lib_name}
-Libraries and a PAM module for interacting with ConsoleKit.
+%description -n %{libname}
+This package containes the shared library for ConsoleKit.
 
-%package -n %{lib_name_devel}
-Summary: Development libraries and headers for ConsoleKit
+%package -n %{develname}
+Summary: Development library and headers for ConsoleKit
 Group: Development/C
-Requires: %{lib_name} = %{version}
+Requires: %{libname} = %{version}
 Provides: %{name}-devel = %{version}-%{release}
 Provides: %{pkgname}-devel = %{version}-%{release}
 License: MIT
 
-%description -n %{lib_name_devel}
-Headers, libraries and API docs for ConsoleKit
+%description -n %{develname}
+Headers, library and API docs for ConsoleKit
 
 %prep
-%setup -q -n %{pkgname}-%{version}
+%setup -qn %{pkgname}-%{version}
 %apply_patches
 
 %build
-%configure2_5x --localstatedir=%{_var} \
-		--with-pid-file=%{_var}/run/console-kit-daemon.pid \
-		--enable-pam-module \
-		--with-pam-module-dir=/%{_lib}/security \
+%configure2_5x \
+	--disable-static \
+	--localstatedir=%{_var} \
+	--with-pid-file=%{_var}/run/console-kit-daemon.pid \
+	--enable-pam-module \
+	--with-pam-module-dir=/%{_lib}/security \
 %if !%{_with_systemd}
-		--without-systemdsystemunitdir \
+	--without-systemdsystemunitdir \
 %else
-		--with-systemdsystemunitdir=%{_unitdir} \
+	--with-systemdsystemunitdir=%{_unitdir} \
 %endif
-		--enable-docbook-docs 
+	--enable-docbook-docs 
 
 %make
 
 %install
 rm -rf %{buildroot}
 %makeinstall_std
-
-rm -f %{buildroot}%{_libdir}/*.{a,la}
-rm -f %{buildroot}/%{_lib}/security/*.{a,la}
+find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 rm -rf %{buildroot}/%{_datadir}/doc/ConsoleKit
 # make sure we don't package a history log
 rm -f %{buildroot}/%{_var}/log/ConsoleKit/history
-
-%clean
-rm -rf %{buildroot}
 
 %pre
 # remove obsolete ConsoleKit initscript 
@@ -129,19 +125,8 @@ if [ -f /var/log/ConsoleKit/history ]; then
     chmod a+r /var/log/ConsoleKit/history
 fi
 
-
-%if %mdkversion < 200900
-%post -n %{lib_name} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{lib_name} -p /sbin/ldconfig
-%endif
-
 %files
-%defattr(-,root,root,-)
 %doc README AUTHORS NEWS COPYING
-
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/*
 %{_sbindir}/console-kit-daemon
 %{_sbindir}/ck-log-system-start
@@ -151,6 +136,7 @@ fi
 %{_bindir}/ck-list-sessions
 %{_bindir}/ck-launch-session
 %config(noreplace) %{_sysconfdir}/ConsoleKit
+/%{_lib}/security/*.so
 %{_prefix}/lib/ConsoleKit
 %{_datadir}/polkit-1/actions/*
 %{_datadir}/dbus-1/system-services/*
@@ -167,19 +153,15 @@ fi
 /lib/systemd/system/poweroff.target.wants/console-kit-log-system-stop.service
 /lib/systemd/system/reboot.target.wants/console-kit-log-system-restart.service
 %endif
-
-%files x11
-%defattr(-,root,root,-)
-%{_libexecdir}/ck-*
-
-%files -n %{lib_name}
-%defattr(-,root,root,-)
-%{_libdir}/lib*.so.*
-/%{_lib}/security/*.so
 %{_mandir}/man8/pam_ck_connector.8.*
 
-%files -n %{lib_name_devel}
-%defattr(-,root,root,-)
+%files x11
+%{_libexecdir}/ck-*
+
+%files -n %{libname}
+%{_libdir}/lib*.so.*
+
+%files -n %{develname}
 %doc doc/dbus/ConsoleKit.html
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*
