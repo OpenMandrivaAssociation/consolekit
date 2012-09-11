@@ -142,14 +142,15 @@ fi
 %attr(755,root,root) %{_var}/log/ConsoleKit
 %attr(750,root,root) %{_var}/run/ConsoleKit
 %if %{_with_systemd}
-/lib/systemd/system/console-kit-daemon.service
-/lib/systemd/system/console-kit-log-system-start.service
-/lib/systemd/system/console-kit-log-system-stop.service
-/lib/systemd/system/console-kit-log-system-restart.service
-/lib/systemd/system/basic.target.wants/console-kit-log-system-start.service
-/lib/systemd/system/halt.target.wants/console-kit-log-system-stop.service
-/lib/systemd/system/poweroff.target.wants/console-kit-log-system-stop.service
-/lib/systemd/system/reboot.target.wants/console-kit-log-system-restart.service
+%{_unitdir}/console-kit-daemon.service
+%{_unitdir}/console-kit-log-system-start.service
+%{_unitdir}/console-kit-log-system-stop.service
+%{_unitdir}/console-kit-log-system-restart.service
+%{_unitdir}/basic.target.wants/console-kit-log-system-start.service
+%{_unitdir}/halt.target.wants/console-kit-log-system-stop.service
+%{_unitdir}/kexec.target.wants/console-kit-log-system-restart.service
+%{_unitdir}/poweroff.target.wants/console-kit-log-system-stop.service
+%{_unitdir}/reboot.target.wants/console-kit-log-system-restart.service
 %endif
 %{_mandir}/man8/pam_ck_connector.8.*
 
@@ -165,4 +166,3 @@ fi
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_datadir}/dbus-1/interfaces/*
-
