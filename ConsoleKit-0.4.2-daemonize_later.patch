@@ -1,0 +1,25 @@
+diff -p -up ConsoleKit-0.4.2/src/main.c.daemonize_later ConsoleKit-0.4.2/src/main.c
+--- ConsoleKit-0.4.2/src/main.c.daemonize_later	2010-09-03 15:54:31.000000000 +0200
++++ ConsoleKit-0.4.2/src/main.c	2010-09-27 10:39:47.000000000 +0200
+@@ -288,10 +288,6 @@ main (int    argc,
+                 goto out;
+         }
+ 
+-        if (! no_daemon && daemon (0, 0)) {
+-                g_error ("Could not daemonize: %s", g_strerror (errno));
+-        }
+-
+         setup_debug_log (debug);
+ 
+         g_debug ("initializing console-kit-daemon %s", VERSION);
+@@ -320,6 +316,10 @@ main (int    argc,
+ 
+         create_pid_file ();
+ 
++        if (! no_daemon && daemon (0, 0)) {
++                g_error ("Could not daemonize: %s", g_strerror (errno));
++        }
++
+         loop = g_main_loop_new (NULL, FALSE);
+ 
+         g_signal_connect (bus_proxy,
