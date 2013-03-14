@@ -1,7 +1,7 @@
 %define pkgname	ConsoleKit
 %define major	0
-%define libname %mklibname consolekit %{major}
-%define devname %mklibname -d consolekit
+%define libname %mklibname ck-connector %{major}
+%define devname %mklibname -d ck-connector
 
 %define git_url git://anongit.freedesktop.org/ConsoleKit
 %define _with_systemd 1
@@ -9,7 +9,7 @@
 Summary:	System daemon for tracking users, sessions and seats
 Name:		consolekit
 Version:	0.4.5
-Release:	4
+Release:	5
 License:	GPLv2+
 Group:		System/Libraries
 Url:		http://www.freedesktop.org/wiki/Software/ConsoleKit
@@ -22,10 +22,10 @@ Patch3:		ConsoleKit-0.4.2-daemonize_later.patch
 BuildRequires:	docbook-dtd412-xml
 BuildRequires:	xmlto
 BuildRequires:	pam-devel
-BuildRequires:	pkgconfig(glib-2.0)
 BuildRequires:	pkgconfig(dbus-1)
 BuildRequires:	pkgconfig(dbus-glib-1)
-BuildRequires:	pkgconfig(polkit-1)
+BuildRequires:	pkgconfig(glib-2.0)
+BuildRequires:	pkgconfig(polkit-agent-1)
 BuildRequires:	pkgconfig(x11)
 %if %{_with_systemd}
 BuildRequires:	systemd-units
@@ -59,6 +59,7 @@ have a requires for this package.
 Summary:	ConsoleKit libraries
 Group:		System/Libraries
 License:	MIT
+Obsoletes:	%{_lib}consolekit0 < 0.4.5-5
 
 %description -n %{libname}
 This package containes the shared library for ConsoleKit.
@@ -69,6 +70,7 @@ Group:		Development/C
 License:	MIT
 Requires:	%{libname} = %{version}-%{release}
 Provides:	%{name}-devel = %{version}-%{release}
+Obsoletes:	%{_lib}consolekit-devel < 0.4.5-5
 
 %description -n %{devname}
 Headers, library and API docs for ConsoleKit
@@ -146,7 +148,7 @@ fi
 %{_libexecdir}/ck-*
 
 %files -n %{libname}
-%{_libdir}/lib*.so.%{major}*
+%{_libdir}/libck-connector.so.%{major}*
 
 %files -n %{devname}
 %doc doc/dbus/ConsoleKit.html
