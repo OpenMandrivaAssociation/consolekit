@@ -1,15 +1,9 @@
-%define glib2_version 2.7.0
-%define dbus_version 0.90
-%define dbus_glib_version 0.70
-
-%define lib_major 0
-%define libname %mklibname consolekit %{lib_major}
-%define develname %mklibname -d consolekit
-
-%define pkgname ConsoleKit
+%define pkgname	ConsoleKit
+%define major	0
+%define libname %mklibname consolekit %{major}
+%define devname %mklibname -d consolekit
 
 %define git_url git://anongit.freedesktop.org/ConsoleKit
-
 %define _with_systemd 1
 
 Summary:	System daemon for tracking users, sessions and seats
@@ -18,31 +12,27 @@ Version:	0.4.5
 Release:	4
 License:	GPLv2+
 Group:		System/Libraries
-URL:		http://www.freedesktop.org/wiki/Software/ConsoleKit
+Url:		http://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0:	http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{version}.tar.bz2
 # (blino) daemonize only after ConsoleKit is available
 #         or "activation" from clients will fail since D-Bus requires
 #         the service name to be acquired before the daemon helper exits
 Patch3:		ConsoleKit-0.4.2-daemonize_later.patch
 
-BuildRequires:	glib2-devel >= %{glib2_version}
-BuildRequires:	dbus-devel  >= %{dbus_version}
-BuildRequires:	dbus-glib-devel >= %{dbus_glib_version}
-BuildRequires:	polkit-1-devel
-BuildRequires:	pam-devel
-BuildRequires:	libx11-devel
-BuildRequires:	xmlto
 BuildRequires:	docbook-dtd412-xml
+BuildRequires:	xmlto
+BuildRequires:	pam-devel
+BuildRequires:	pkgconfig(glib-2.0)
+BuildRequires:	pkgconfig(dbus-1)
+BuildRequires:	pkgconfig(dbus-glib-1)
+BuildRequires:	pkgconfig(polkit-1)
+BuildRequires:	pkgconfig(x11)
 %if %{_with_systemd}
 BuildRequires:	systemd-units
 %endif
-
-Requires(post):	chkconfig
-Requires(preun):	chkconfig
+Requires(post,preun):	chkconfig
 Requires:	pam
-
 Provides:	should-restart = system
-Provides:	%{pkgname} = %{version}-%{release}
 Conflicts:	%{libname} < 0.4.5-3
 
 %description
@@ -57,7 +47,6 @@ a PAM module for interacting with ConsoleKit.
 Summary:	X11-requiring add-ons for ConsoleKit
 Group:		System/Libraries
 Requires:	%{name} = %{version}-%{release}
-License:	GPLv2+
 
 %description x11
 ConsoleKit contains some tools that require Xlib to be installed,
@@ -74,15 +63,14 @@ License:	MIT
 %description -n %{libname}
 This package containes the shared library for ConsoleKit.
 
-%package -n %{develname}
+%package -n %{devname}
 Summary:	Development library and headers for ConsoleKit
 Group:		Development/C
+License:	MIT
 Requires:	%{libname} = %{version}-%{release}
 Provides:	%{name}-devel = %{version}-%{release}
-Provides:	%{pkgname}-devel = %{version}-%{release}
-License:	MIT
 
-%description -n %{develname}
+%description -n %{devname}
 Headers, library and API docs for ConsoleKit
 
 %prep
@@ -107,7 +95,7 @@ Headers, library and API docs for ConsoleKit
 
 %install
 %makeinstall_std
-find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
+
 rm -rf %{buildroot}/%{_datadir}/doc/ConsoleKit
 # make sure we don't package a history log
 rm -f %{buildroot}/%{_var}/log/ConsoleKit/history
@@ -158,11 +146,12 @@ fi
 %{_libexecdir}/ck-*
 
 %files -n %{libname}
-%{_libdir}/lib*.so.%{lib_major}*
+%{_libdir}/lib*.so.%{major}*
 
-%files -n %{develname}
+%files -n %{devname}
 %doc doc/dbus/ConsoleKit.html
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_datadir}/dbus-1/interfaces/*
+
