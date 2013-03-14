@@ -9,7 +9,7 @@
 Summary:	System daemon for tracking users, sessions and seats
 Name:		consolekit
 Version:	0.4.5
-Release:	5
+Release:	ZED'S DEAD BABY (OBSOLETED BY SYSTEMD)
 License:	GPLv2+
 Group:		System/Libraries
 Url:		http://www.freedesktop.org/wiki/Software/ConsoleKit
