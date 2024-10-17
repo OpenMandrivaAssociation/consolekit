@@ -12,7 +12,7 @@ Version:	0.4.5
 Release:	ZED'S DEAD BABY (OBSOLETED BY SYSTEMD)
 License:	GPLv2+
 Group:		System/Libraries
-Url:		http://www.freedesktop.org/wiki/Software/ConsoleKit
+Url:		https://www.freedesktop.org/wiki/Software/ConsoleKit
 Source0:	http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{version}.tar.bz2
 # (blino) daemonize only after ConsoleKit is available
 #         or "activation" from clients will fail since D-Bus requires
