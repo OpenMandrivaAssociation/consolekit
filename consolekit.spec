@@ -19,6 +19,11 @@ Source0:	http://www.freedesktop.org/software/ConsoleKit/dist/%{pkgname}-%{versio
 #         the service name to be acquired before the daemon helper exits
 Patch3:		ConsoleKit-0.4.2-daemonize_later.patch
 
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	docbook-dtd412-xml
 BuildRequires:	xmlto
 BuildRequires:	pam-devel
